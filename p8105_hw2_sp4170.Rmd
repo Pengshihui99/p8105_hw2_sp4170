@@ -87,3 +87,22 @@ Description:
 2. the range of years contained in the final data set is from 1947 to 2015.
 3. the final data set is a `r nrow(pols_month_df_merge)` rows * `r ncol(pols_month_df_merge)` cols data set.
 4. the names of variables are `r colnames(pols_month_df_merge)`.
+
+# problem 2
+
+```{r}
+library(readxl)
+```
+Read and clean the Mr. Trash Wheel sheet:
+
+* specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in read_excel
+* use reasonable variable names
+* omit rows that do not include dumpster-specific data
+```{r}
+mr_trash_wheel_df = 
+  read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |> 
+  janitor::clean_names() |> 
+  drop_na(dumpster)
+
+```
+
