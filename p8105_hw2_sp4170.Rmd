@@ -56,10 +56,34 @@ snp_df =
 unemployment_df = 
   mutate (unemployment_df, year = as.character(year))
 
-pols_month_df = 
+pols_month_df_merge = 
   left_join(pols_month_df, snp_df, by = c("year", "month"))
 
-pols_month_df = 
+pols_month_df_merge = 
   left_join(pols_month_df, unemployment_df, by = c("year", "month"))
 ```
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset.(e.g. give the dimension, range of years, and names of key variables).
 
+Description:
+
+*pols_month_df*:
+
+1. this data set is a `r nrow(pols_month_df)` rows * `r ncol(pols_month_df)` cols data set.
+2. the names of variables are `r colnames(pols_month_df)`
+
+*snp_df*:
+
+1. this data set is a `r nrow(snp_df)` rows * `r ncol(snp_df)` cols data set.
+2. the names of variables are `r colnames(snp_df)`
+
+*unemployment_df*:
+
+1. this data set is a `r nrow(unemployment_df)` rows * `r ncol(unemployment_df)` cols data set.
+2. the names of variables are `r colnames(unemployment_df)`
+
+*Final data set*:
+
+1. the final data set, pols_month_df_merge, is made up of 3 original data sets, which are pols-month.csv, snp.csv, and unemployment.csv. 
+2. the range of years contained in the final data set is from 1947 to 2015.
+3. the final data set is a `r nrow(pols_month_df_merge)` rows * `r ncol(pols_month_df_merge)` cols data set.
+4. the names of variables are `r colnames(pols_month_df_merge)`.
