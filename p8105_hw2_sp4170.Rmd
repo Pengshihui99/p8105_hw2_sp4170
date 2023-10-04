@@ -177,7 +177,35 @@ Import, clean, and tidy the dataset of baseline demographics.  Ensure that sex a
 mci_baseline = 
   read_csv("data/MCI_baseline.csv", skip = 1, col_names = TRUE) |> 
   janitor::clean_names() |> 
-  mutate(sex = recode(sex, "0" = "female", "1" = "male"), apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier")) |> 
-  drop_na(age_at_onset)
+  filter(age_at_onset != ".") |> 
+  mutate(sex = recode(sex, "0" = "female", "1" = "male"), apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier"))
 ```
+* Discuss important steps in the import process and relevant features of the dataset.  
 
+  * need to skip the first row with `skip = 1` because variable names have taken a whole row in the original file.
+  * need to use `col_names = TRUE` to make the original first row to be the columns name.
+  * need to use `janitor::clean_names()` to make sure column names are all in snake_case format.
+  * need to use `filter()` to keep the rows with age_at_onset is not of null value ".".
+  * need to use `recode` to recode the value of the sex column and the apoe4 column.
+
+* How many participants were recruited, and of these how many develop MCI?  
+  
+```{r}
+mci_baseline_original = 
+  read_csv("data/MCI_baseline.csv", skip = 1, col_names = TRUE) |> 
+  janitor::clean_names()
+```
+  * there are `r nrow(mci_baseline_original)` participants recruited in the study. Of these participants, there are `r nrow(mci_baseline)` of participants who developed MCI.
+
+* What is the average baseline age? 
+
+  * the average baseline age is `r round(summarise(mci_baseline, age_mean = mean(current_age)),digits = 2)`
+
+
+* What proportion of women in the study are APOE4 carriers?
+```{r}
+x_df = filter(mci_baseline_original, sex == 1)
+y_df = filter(mci_baseline_original, sex == 1 & apoe4 == 1)
+```
+  * the proportion of women in the study are APOE4 carriers is `r round(nrow(y_df) / nrow(x_df), digits = 4)`, which is the same as 30.15%.
+  
