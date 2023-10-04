@@ -144,3 +144,31 @@ trash_wheel_df =
   janitor::clean_names()
 ```
 
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+
+* for the data set mr_trash_wheel_df: 
+
+  * the dimension of the final data set trash_wheel_df is **`r nrow(mr_trash_wheel_df)` rows * `r ncol(mr_trash_wheel_df)` cols**, and there are `r nrow(mr_trash_wheel_df)` observations in the resulting dataset.
+  * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(mr_trash_wheel_df)`**
+  
+* for the data set professor_trash_wheel_df:
+
+  * the dimension of the final data set trash_wheel_df is **`r nrow(professor_trash_wheel_df)` rows * `r ncol(professor_trash_wheel_df)` cols**, and there are `r nrow(professor_trash_wheel_df)` observations in the resulting dataset.
+  * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(professor_trash_wheel_df)`**
+
+* for the data set gwynnda_trash_wheel_df:
+
+  * the dimension of the final data set trash_wheel_df is **`r nrow(gwynnda_trash_wheel_df)` rows * `r ncol(gwynnda_trash_wheel_df)` cols**, and there are `r nrow(gwynnda_trash_wheel_df)` observations in the resulting dataset.
+  * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(gwynnda_trash_wheel_df)`**
+
+
+* for the final data set trash_wheel_df:
+
+  * the dimension of the final data set trash_wheel_df is **`r nrow(trash_wheel_df)` rows * `r ncol(trash_wheel_df)` cols**, and there are `r nrow(trash_wheel_df)` observations in the resulting dataset.
+  * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(trash_wheel_df)`**
+  
+  
+* for the available data, the total weight of trash collected by Professor Trash Wheel is `r filter(trash_wheel_df, type == "professor_trash_wheel") |> summarise(sum(weight_tons))`
+* the total number of cigarette butts collected by Gwynnda in July of 2021 is `r filter(trash_wheel_df, type == "gwynnda_trash_wheel" & month == "July" & year == 2021) |> summarise(sum(cigarette_butts))`
+
+
