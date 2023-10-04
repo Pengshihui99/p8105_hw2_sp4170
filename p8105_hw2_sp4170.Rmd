@@ -104,6 +104,7 @@ The data include a column for the (approximate) number of homes powered. This ca
 mr_trash_wheel_df = 
   read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |> 
   janitor::clean_names() |> 
+  mutate(year = as.double(year)) |> 
   drop_na(dumpster) |> 
   mutate(homes_powered = (500 * weight_tons)/30)
 ```
@@ -112,6 +113,7 @@ Use the similar process to import, clean, and organize the data for Professor Tr
 professor_trash_wheel_df = 
   read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |> 
   janitor::clean_names() |> 
+  mutate(year = as.double(year)) |> 
   drop_na(dumpster) |> 
   mutate(homes_powered = (500 * weight_tons)/30)
 ```
@@ -121,6 +123,7 @@ gwynnda_trash_wheel_df =
   read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |> 
   janitor::clean_names() |> 
   drop_na(dumpster) |> 
+  mutate(year = as.double(year)) |> 
   mutate(homes_powered = (500 * weight_tons)/30)
 ```
 Combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to all datasets before combining.
@@ -133,5 +136,11 @@ professor_trash_wheel_df =
 
 gwynnda_trash_wheel_df = 
   mutate(gwynnda_trash_wheel_df, type = "gwynnda_trash_wheel")
+```
+
+```{r}
+trash_wheel_df = 
+  bind_rows(mr_trash_wheel_df, professor_trash_wheel_df, gwynnda_trash_wheel_df) |> 
+  janitor::clean_names()
 ```
 
