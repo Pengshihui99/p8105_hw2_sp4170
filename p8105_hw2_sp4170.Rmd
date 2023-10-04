@@ -14,10 +14,35 @@ First, clean the data in pols-month.csv. Use separate() to break up the variable
 pols_month_df =
   read_csv("data/pols-month.csv") |> 
   janitor::clean_names() |> 
-  separate(mon, c("year", "month", "day")) |>
+  separate(mon, into = c("year", "month", "day")) |>
   mutate(month = recode(month, "01" = "January", "02" = "Feburary", "03" = "March", "04" = "April", "05" = "May", "06" = "June", "07" = "July", "08" = "August", "09" = "September", "10" = "October", "11" = "November", "12" = "December")) |> 
   mutate(president = ifelse(prez_gop == 0, "prez_dem", "prez_gop")) |> 
   select(year, month, gov_gop : rep_gop, gov_dem : president)
 
+```
+Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+```{r}
+snp_df =
+  read_csv("data/snp.csv") |> 
+  janitor::clean_names() |> 
+  separate(date, into = c("month", "day", "year")) |> 
+  mutate(year = as.numeric(year)) |> 
+  mutate(year = 2000 + year) |> 
+  mutate(month = recode(month, "1" = "January", "2" = "Feburary", "3" = "March", "4" = "April", "5" = "May", "6" = "June", "7" = "July", "8" = "August", "9" = "September", "10" = "October", "11" = "November", "12" = "December")) |> 
+  mutate(month = as.factor(month)) |> 
+  arrange(year, month) |> 
+  relocate(year, month)
+```
+Third, tidy the unemployment data so that it can be merged with the previous datasets. This process will involve switching from “wide” to “long” format; ensuring that key variables have the same name; and ensuring that key variables take the same values.
+```{r}
+unemployment_df = 
+  read_csv("data/unemployment.csv") |> 
+  janitor::clean_names() |> 
+  pivot_longer(
+    jan:dec,
+    names_to = "month",
+    values_to = "unemployment_pct"
+  ) |> 
+  mutate(month = recode(month, "jan" = "January",  "feb" = "Feburary", "mar" = "March", "apr" = "April", "may" = "May", "jun" = "June", "jul" = "July", "aug" = "August", "sep" = "September", "oct" = "October", "nov" = "November", "dec" = "December"))
 ```
 
