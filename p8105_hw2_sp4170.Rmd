@@ -177,7 +177,7 @@ Import, clean, and tidy the dataset of baseline demographics.  Ensure that sex a
 mci_baseline = 
   read_csv("data/MCI_baseline.csv", skip = 1, col_names = TRUE) |> 
   janitor::clean_names() |> 
-  filter(current_age <= age_at_onset & age_at_onset != ".") |> 
+  filter(current_age < age_at_onset | age_at_onset == ".") |> 
   mutate(sex = recode(sex, "0" = "female", "1" = "male"), apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier"))
 ```
 * Discuss important steps in the import process and relevant features of the dataset.  
@@ -192,8 +192,9 @@ mci_baseline =
   
 ```{r}
 mci_baseline_original = 
-  read_csv("data/MCI_baseline.csv", skip = 1, col_names = TRUE) |> 
-  janitor::clean_names()
+  read_csv("data/MCI_baseline.csv", skip = 1) |> 
+  janitor::clean_names() |> 
+  mutate(sex = recode(sex, "0" = "female", "1" = "male"), apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier"))
 ```
   * there are `r nrow(mci_baseline_original)` participants recruited in the study. Of these participants, there are `r nrow(mci_baseline)` of participants who developed MCI.
 
@@ -209,8 +210,16 @@ y_df = filter(mci_baseline, sex == "female" & apoe4 == "carrier")
 
 nrow(y_df) / nrow(x_df)
 ```
-  * the proportion of women in the study are APOE4 carriers is `r round(nrow(y_df) / nrow(x_df), digits = 4)`, which is the same as 29.86%.
+  * the proportion of women in the study are APOE4 carriers is `r round(nrow(y_df) / nrow(x_df), digits = 4)`.
   
+Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values;  comment on the steps on the import process and the features of the dataset.
+
+```{r}
+mci_amyloid_df = 
+  read_csv("data/mci_amyloid.csv", skip = 1) |> 
+  janitor::clean_names()
+  
+```
 
   
   
