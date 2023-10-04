@@ -218,6 +218,14 @@ Similarly, import, clean, and tidy the dataset of longitudinally observed biomar
 mci_amyloid_df = 
   read_csv("data/mci_amyloid.csv", skip = 1) |> 
   janitor::clean_names()
+
+mci_amyloid_pivot_df = 
+  pivot_longer(
+    mci_amyloid_df, time_2 : time_8,
+    names_to = "follow_up_time",
+    values_to = "amyloid",
+    names_prefix = "time_"
+  )
   
 ```
 
