@@ -172,13 +172,19 @@ Write a paragraph about these data; you are encouraged to use inline R. Be sure 
 
 # problem 3
 
+## import datasets
+
 *Import, clean, and tidy the dataset of baseline demographics.  Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline).*
 ```{r}
 mci_baseline = 
-  read_csv("data/MCI_baseline.csv", skip = 1, col_names = TRUE) |> 
+  read_csv("data/MCI_baseline.csv", skip = 1) |> 
   janitor::clean_names() |> 
   filter(current_age < age_at_onset | age_at_onset == ".") |> 
-  mutate(sex = recode(sex, "0" = "female", "1" = "male"), apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier"))
+  mutate(
+    sex = 
+      case_match(sex, 0 ~ "female", 1 ~ "male"), 
+    apoe4 = 
+      case_match(apoe4, 0 ~ "non-carrier", 1 ~ "carrier"))
 ```
 *Discuss important steps in the import process and relevant features of the dataset.*
 
@@ -188,28 +194,25 @@ mci_baseline =
   * need to use `recode` to recode the value of the sex column and the apoe4 column.
 
 *How many participants were recruited, and of these how many develop MCI?* 
-  
 ```{r}
 mci_baseline_original = 
   read_csv("data/MCI_baseline.csv", skip = 1) |> 
   janitor::clean_names() |> 
-  mutate(sex = recode(sex, "0" = "female", "1" = "male"), apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier"))
+  mutate(
+    sex = 
+      case_match(sex, 0 ~ "female", 1 ~ "male"), 
+    apoe4 = 
+      case_match(apoe4, 0 ~ "non-carrier", 1 ~ "carrier"))
 ```
   * there are `r nrow(mci_baseline_original)` participants recruited in the study. Of these participants, there are `r nrow(mci_baseline)` of participants who developed MCI.
 
 *What is the average baseline age?*
 
-  * the average baseline age is `r round(summarise(mci_baseline, age_mean = mean(current_age)),digits = 2)`
-
+  * the average baseline age is `r round(mean(pull(mci_baseline, current_age)),digits = 4)`, after we filter the original data set based on the inclusion criteria "no MCI at base line".
 
 *What proportion of women in the study are APOE4 carriers?*
-```{r}
-x_df = filter(mci_baseline, sex == "female")
-y_df = filter(mci_baseline, sex == "female" & apoe4 == "carrier")
 
-nrow(y_df) / nrow(x_df)
-```
-  * the proportion of women in the study are APOE4 carriers is `r round(nrow(y_df) / nrow(x_df), digits = 4)`.
+  * the proportion of women in the study are APOE4 carriers is `r round(nrow(filter(mci_baseline, sex == "female" & apoe4 == "carrier")) / nrow(filter(mci_baseline, sex == "female")), digits = 4)`.
   
 *Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values;  comment on the steps on the import process and the features of the dataset.*
 
@@ -270,19 +273,36 @@ amyloid_only_df =
 ```
 * based on the anti_join process, there are `r nrow(amyloid_only_df)` participants who are only appear in the amyloid dataset but not appear in the baseline dataset.
 
+## combine the datasets
 
 *Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained, and briefly describe the resulting dataset.*
+Since i have 2 datasets for amyloid data, i will try them both.
+
+if i combine the original data sets "mci_amyloid_df" and "mci_baseline":
 ```{r}
 baseline_amyloid_both_df = 
   inner_join(mci_amyloid_df, mci_baseline, by = "id")
 ```
-* there are `r nrow(baseline_amyloid_both_df)` participants appear in both datasets. the combined data set has `r nrow(baseline_amyloid_both_df)` rows and `r ncol(baseline_amyloid_both_df)` cols. the names of variables are `r colnames(baseline_amyloid_both_df)`.
+* there are `r nrow(baseline_amyloid_both_df)` participants appear in both datasets "mci_amyloid_df" and "mci_baseline". the combined data set has `r nrow(baseline_amyloid_both_df)` rows and `r ncol(baseline_amyloid_both_df)` cols. the names of variables are `r colnames(baseline_amyloid_both_df)`.
 
+
+if i combine the data sets after pivot_longer "mci_amyloid_pivot_df" and "mci_baseline":
 ```{r}
 baseline_amyloid_pivot_both_df = 
   inner_join(mci_amyloid_pivot_df, mci_baseline, by = "id")
 ```
-* there are `r nrow(baseline_amyloid_pivot_both_df)` participants appear in both datasets. the combined data set has `r nrow(baseline_amyloid_pivot_both_df)` rows and `r ncol(baseline_amyloid_pivot_both_df)` cols. the names of variables are `r colnames(baseline_amyloid_pivot_both_df)`.
+* there are `r nrow(baseline_amyloid_pivot_both_df)` participants appear in both datasets "mci_amyloid_pivot_df" and "mci_baseline". the combined data set has `r nrow(baseline_amyloid_pivot_both_df)` rows and `r ncol(baseline_amyloid_pivot_both_df)` cols. the names of variables are `r colnames(baseline_amyloid_pivot_both_df)`.
+
+## export final data set
 
 *export the result as a CSV to your data directory.*
+export the combining dataset for "mci_amyloid_pivot_df" and "mci_baseline"
+```{r}
+write_csv(baseline_amyloid_pivot_both_df, "data/baseline_amyloid_pivot_both_df.csv")
+```
+
+*export the combining dataset for "mci_amyloid_df" and "mci_baseline"*
+```{r}
+write_csv(baseline_amyloid_both_df, "data/baseline_amyloid_both_df.csv")
+```
 
