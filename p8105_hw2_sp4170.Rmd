@@ -6,6 +6,7 @@ output: github_document
 ---
 ```{r, message=FALSE, echo=FALSE}
 library(tidyverse)
+library(readxl)
 ```
 
 # Problem 1
@@ -90,9 +91,6 @@ Description:
 
 # problem 2
 
-```{r}
-library(readxl)
-```
 Read and clean the Mr. Trash Wheel sheet:
 
 * specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in read_excel
@@ -171,4 +169,15 @@ Write a paragraph about these data; you are encouraged to use inline R. Be sure 
 * for the available data, the total weight of trash collected by Professor Trash Wheel is `r filter(trash_wheel_df, type == "professor_trash_wheel") |> summarise(sum(weight_tons))`
 * the total number of cigarette butts collected by Gwynnda in July of 2021 is `r filter(trash_wheel_df, type == "gwynnda_trash_wheel" & month == "July" & year == 2021) |> summarise(sum(cigarette_butts))`
 
+
+# problem 3
+
+Import, clean, and tidy the dataset of baseline demographics.  Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline).
+```{r}
+mci_baseline = 
+  read_csv("data/MCI_baseline.csv", skip = 1, col_names = TRUE) |> 
+  janitor::clean_names() |> 
+  mutate(sex = recode(sex, "0" = "female", "1" = "male"), apoe4 = recode(apoe4, "0" = "non-carrier", "1" = "carrier")) |> 
+  drop_na(age_at_onset)
+```
 
