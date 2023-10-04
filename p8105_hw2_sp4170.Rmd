@@ -107,5 +107,12 @@ mr_trash_wheel_df =
   drop_na(dumpster) |> 
   mutate(homes_powered = (500 * weight_tons)/30)
 ```
-
+Use the similar process to import, clean, and organize the data for Professor Trash Wheel 
+```{r}
+professor_trash_wheel_df = 
+  read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |> 
+  janitor::clean_names() |> 
+  drop_na(dumpster) |> 
+  mutate(homes_powered = (500 * weight_tons)/30)
+```
 
