@@ -4,3 +4,20 @@ author: "Shihui Peng"
 date: "2023-10-03"
 output: github_document
 ---
+```{r, message=FALSE, echo=FALSE}
+library(tidyverse)
+```
+
+# Problem 1
+First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+```{r}
+pols_month_df =
+  read_csv("data/pols-month.csv") |> 
+  janitor::clean_names() |> 
+  separate(mon, c("year", "month", "day")) |>
+  mutate(month = recode(month, "01" = "January", "02" = "Feburary", "03" = "March", "04" = "April", "05" = "May", "06" = "June", "07" = "July", "08" = "August", "09" = "September", "10" = "October", "11" = "November", "12" = "December")) |> 
+  mutate(president = ifelse(prez_gop == 0, "prez_dem", "prez_gop")) |> 
+  select(year, month, gov_gop : rep_gop, gov_dem : president)
+
+```
+
