@@ -91,7 +91,9 @@ Description:
 
 # problem 2
 
-Read and clean the Mr. Trash Wheel sheet:
+## import data sets
+
+*Read and clean the Mr. Trash Wheel sheet:*
 
 * specify the sheet in the Excel file and to omit non-data entries (rows with notes / figures; columns containing notes) using arguments in read_excel
 * use reasonable variable names
@@ -106,7 +108,8 @@ mr_trash_wheel_df =
   drop_na(dumpster) |> 
   mutate(homes_powered = (500 * weight_tons)/30)
 ```
-Use the similar process to import, clean, and organize the data for Professor Trash Wheel 
+
+*Use the similar process to import, clean, and organize the data for Professor Trash Wheel*
 ```{r}
 professor_trash_wheel_df = 
   read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |> 
@@ -115,7 +118,8 @@ professor_trash_wheel_df =
   drop_na(dumpster) |> 
   mutate(homes_powered = (500 * weight_tons)/30)
 ```
-Use the similar process to import, clean, and organize the data for Gwynnda
+
+*Use the similar process to import, clean, and organize the data for Gwynnda*
 ```{r}
 gwynnda_trash_wheel_df = 
   read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |> 
@@ -124,7 +128,10 @@ gwynnda_trash_wheel_df =
   mutate(year = as.double(year)) |> 
   mutate(homes_powered = (500 * weight_tons)/30)
 ```
-Combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to all datasets before combining.
+
+*Combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset.*
+
+To keep track of which Trash Wheel is which, you may need to add an additional variable to all datasets before combining.
 ```{r}
 mr_trash_wheel_df = 
   mutate(mr_trash_wheel_df, type = "mr_trash_wheel")
@@ -135,44 +142,47 @@ professor_trash_wheel_df =
 gwynnda_trash_wheel_df = 
   mutate(gwynnda_trash_wheel_df, type = "gwynnda_trash_wheel")
 ```
-
+then, use `bind_rows` to combine these datasets
 ```{r}
 trash_wheel_df = 
   bind_rows(mr_trash_wheel_df, professor_trash_wheel_df, gwynnda_trash_wheel_df) |> 
   janitor::clean_names()
 ```
 
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+*Write a paragraph about these data; Be sure to note the number of observations in the resulting dataset, and give examples of key variables.*
 
 * for the data set mr_trash_wheel_df: 
 
-  * the dimension of the final data set trash_wheel_df is **`r nrow(mr_trash_wheel_df)` rows * `r ncol(mr_trash_wheel_df)` cols**, and there are `r nrow(mr_trash_wheel_df)` observations in the resulting dataset.
+  * the dimension of the final data set trash_wheel_df is **`r nrow(mr_trash_wheel_df)` rows * `r ncol(mr_trash_wheel_df)` cols**, and there are **`r nrow(mr_trash_wheel_df)`** observations in the resulting dataset.
   * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(mr_trash_wheel_df)`**
   
 * for the data set professor_trash_wheel_df:
 
-  * the dimension of the final data set trash_wheel_df is **`r nrow(professor_trash_wheel_df)` rows * `r ncol(professor_trash_wheel_df)` cols**, and there are `r nrow(professor_trash_wheel_df)` observations in the resulting dataset.
+  * the dimension of the final data set trash_wheel_df is **`r nrow(professor_trash_wheel_df)` rows * `r ncol(professor_trash_wheel_df)` cols**, and there are **`r nrow(professor_trash_wheel_df)`** observations in the resulting dataset.
   * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(professor_trash_wheel_df)`**
 
 * for the data set gwynnda_trash_wheel_df:
 
-  * the dimension of the final data set trash_wheel_df is **`r nrow(gwynnda_trash_wheel_df)` rows * `r ncol(gwynnda_trash_wheel_df)` cols**, and there are `r nrow(gwynnda_trash_wheel_df)` observations in the resulting dataset.
+  * the dimension of the final data set trash_wheel_df is **`r nrow(gwynnda_trash_wheel_df)` rows * `r ncol(gwynnda_trash_wheel_df)` cols**, and there are **`r nrow(gwynnda_trash_wheel_df)`** observations in the resulting dataset.
   * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(gwynnda_trash_wheel_df)`**
 
 
 * for the final data set trash_wheel_df:
 
-  * the dimension of the final data set trash_wheel_df is **`r nrow(trash_wheel_df)` rows * `r ncol(trash_wheel_df)` cols**, and there are `r nrow(trash_wheel_df)` observations in the resulting dataset.
+  * the dimension of the final data set trash_wheel_df is **`r nrow(trash_wheel_df)` rows * `r ncol(trash_wheel_df)` cols**, and there are **`r nrow(trash_wheel_df)`** observations in the resulting dataset.
   * the key variables are dumpster, weight_tons, homes_powered, etc. All the variables are listed as followed: **`r colnames(trash_wheel_df)`**
   
-  
-* for the available data, the total weight of trash collected by Professor Trash Wheel is `r filter(trash_wheel_df, type == "professor_trash_wheel") |> summarise(sum(weight_tons))`
-* the total number of cigarette butts collected by Gwynnda in July of 2021 is `r filter(trash_wheel_df, type == "gwynnda_trash_wheel" & month == "July" & year == 2021) |> summarise(sum(cigarette_butts))`
+
+*For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?*
+
+  * the total weight of trash collected by Professor Trash Wheel is **`r sum(filter(trash_wheel_df, type == "professor_trash_wheel") |> pull(weight_tons))`**
+  * the total number of cigarette butts collected by Gwynnda in July of 2021 is **`r sum(filter(trash_wheel_df, type == "gwynnda_trash_wheel" & month == "July" & year == 2021) |> pull(cigarette_butts))`**
+
 
 
 # problem 3
 
-## import datasets
+## import, clean, and tidy datasets
 
 *Import, clean, and tidy the dataset of baseline demographics.  Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline).*
 ```{r}
@@ -188,31 +198,39 @@ mci_baseline =
 ```
 *Discuss important steps in the import process and relevant features of the dataset.*
 
-  * need to skip the first row with `skip = 1` because variable names have taken a whole row in the original file.
+* important steps:
+
+  * need to use `read_csv` to import csv format dataset and skip the first row with `skip = 1` because variable names have taken a whole row in the original file. here i use relative path to import.
   * need to use `janitor::clean_names()` to make sure column names are all in snake_case format.
-  * need to use `filter()` to keep the rows with age_at_onset is of null value "." OR the current_age is smaller than age_at_onset.
-  * need to use `recode` to recode the value of the sex column and the apoe4 column.
+  * need to use `filter()` to keep the rows with age_at_onset is of null value "." OR the current_age is smaller than age_at_onset, in order to meet the include criteria.
+  * need to use `case_match` to recode the value of the sex column and the apoe4 column.
+  
+* features of the dataset mci_baseline_df.
+
+  * there are **`r ncol(mci_baseline)` cols and `r nrow(mci_baseline)` rows** in the final data set. There are **`r nrow(mci_baseline)` observations** in the final data set.
+  * the variables names are **`r colnames(mci_baseline)`**
 
 *How many participants were recruited, and of these how many develop MCI?* 
 ```{r}
-mci_baseline_original = 
+mci_baseline_dev = 
   read_csv("data/MCI_baseline.csv", skip = 1) |> 
   janitor::clean_names() |> 
+  filter(current_age < age_at_onset & age_at_onset != ".") |> 
   mutate(
     sex = 
       case_match(sex, 0 ~ "female", 1 ~ "male"), 
     apoe4 = 
       case_match(apoe4, 0 ~ "non-carrier", 1 ~ "carrier"))
 ```
-  * there are `r nrow(mci_baseline_original)` participants recruited in the study. Of these participants, there are `r nrow(mci_baseline)` of participants who developed MCI.
+  * there are **`r nrow(mci_baseline)` participants** recruited in the study. Of these participants, there are **`r nrow(mci_baseline_dev)`** of participants who developed MCI.
 
 *What is the average baseline age?*
 
-  * the average baseline age is `r round(mean(pull(mci_baseline, current_age)),digits = 4)`, after we filter the original data set based on the inclusion criteria "no MCI at base line".
+  * the average baseline age is **`r mean(pull(mci_baseline, current_age))`**, after we filter the original data set based on the inclusion criteria "no MCI at base line".
 
 *What proportion of women in the study are APOE4 carriers?*
 
-  * the proportion of women in the study are APOE4 carriers is `r round(nrow(filter(mci_baseline, sex == "female" & apoe4 == "carrier")) / nrow(filter(mci_baseline, sex == "female")), digits = 4)`.
+  * the proportion of women in the study are APOE4 carriers is **`r nrow(filter(mci_baseline, sex == "female" & apoe4 == "carrier")) / nrow(filter(mci_baseline, sex == "female"))`.**
   
 *Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values;  comment on the steps on the import process and the features of the dataset.*
 
@@ -223,30 +241,35 @@ mci_amyloid_df =
 
 mci_amyloid_pivot_df = 
   pivot_longer(
-    mci_amyloid_df, time_2 : time_8,
-    names_to = "follow_up_time",
+    mci_amyloid_df, baseline : time_8,
+    names_to = "visit",
     values_to = "amyloid",
     names_prefix = "time_"
+  ) |> 
+  mutate(
+    visit = replace (visit, visit == "baseline", "0")
   )
   
 ```
 *comment on the steps on the import process*
 
-  * need to skip the first row with `skip = 1` because variable names have taken a whole row in the original file.
+  * need to use `read_csv` to import csv format dataset and need to skip the first row with `skip = 1` because variable names have taken a whole row in the original file.
   * need to use `janitor::clean_names()` to make sure column names are all in snake_case format.
-  * when using pivot:
-    * need to contain all the columns that we want to tidy, which is `time_2 : time_8` in this case.
-    * need to use `pivot_longer` because we want the data set to go from wide format to long format. We want have a single column to represent the time variable and another column to represent the corresponding values associated with those time.
-    * we want to put the time variable which are included in the columns names as time_2 ~ time_8 into a separate new column, and name this column as "follow_up_time" using `names_to = "follow_up_time"`. Then all the values that corresponding to the columns time_2 ~ time_8 are moved to a new column named "amyloid" using `values_to = "amyloid"`.
-    * we want to remove the prefix "time_" for all values in new column "follow_up_time" using `names_prefix = "time_"`
+  * when tidying data:
+    * need to contain all the columns that we want to tidy, which is `baseline : time_8` in this case.
+    * need to use `pivot_longer` because we want the data set to go from wide format to long format. We want have a single column to represent all the time variables and another column to represent the corresponding values associated with those time variables.
+    * we want to put the time variables which are included in the columns names as baseline ~ time_8 into a separate new column, and name this column as "visit" using `names_to = "visit"`. Then all the values that corresponding to the columns baseline ~ time_8 are moved to a new column named "amyloid" using `values_to = "amyloid"`.
+    * we want to remove the prefix "time_" for all values in new column "visit" using `names_prefix = "time_"`
+    * we want to replace the "baseline" by "0" in the new column "visit" using `mutate()` and `replace()`.
 
 
 *features of the dataset mci_amyloid_pivot_df.*
 
-  * there are `r ncol(mci_amyloid_pivot_df)` cols and `r nrow(mci_amyloid_pivot_df)` rows in the final data set. There are `r nrow(mci_amyloid_pivot_df)` observations in the final data set.
+  * there are **`r ncol(mci_amyloid_pivot_df)` cols and `r nrow(mci_amyloid_pivot_df)` rows** in the final data set. There are **`r nrow(mci_amyloid_pivot_df)` observations** in the final data set.
   * the variables names are **`r colnames(mci_amyloid_pivot_df)`**
   
   
+## Check whether some participants appear in only the baseline or amyloid datasets
 
 *Check whether some participants appear in only the baseline dataset, and comment on your findings.*
 
@@ -263,7 +286,7 @@ then, use anti_join to check:
 baseline_only_df = 
   anti_join(mci_baseline, mci_amyloid_pivot_df, by = "id")
 ```
-* based on the anti_join process, there are `r nrow(baseline_only_df)` participants who are only appear in the baseline dataset but not appear in the amyloid dataset.
+* based on the anti_join process, there are **`r nrow(baseline_only_df)` participants** who are only appear in the baseline dataset but not appear in the amyloid dataset.
 
 
 *Check whether some participants appear in only the amyloid dataset, and comment on your findings.*
@@ -271,19 +294,20 @@ baseline_only_df =
 amyloid_only_df = 
   anti_join(mci_amyloid_pivot_df, mci_baseline, by = "id")
 ```
-* based on the anti_join process, there are `r nrow(amyloid_only_df)` participants who are only appear in the amyloid dataset but not appear in the baseline dataset.
+* based on the anti_join process, there are **`r nrow(amyloid_only_df)` observations** that are only appear in the amyloid dataset but not appear in the baseline dataset. However, since one participant has 5 records (5 time points in total, which are visit = 0, 2, 4, 6, 8) in the tidied amyloid data set, when asking for how many participants appear in only the amyloid dataset, we need to use `r nrow(amyloid_only_df)` divided by 5, which is **`r nrow(amyloid_only_df)/5` participants** are only appear in the amyloid dataset but not appear in the baseline dataset.
 
 ## combine the datasets
 
 *Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained, and briefly describe the resulting dataset.*
-Since i have 2 datasets for amyloid data, i will try them both.
+
+Since i have 2 datasets for amyloid data, one for original one and the other for after-tidying one, i will try them both.
 
 if i combine the original data sets "mci_amyloid_df" and "mci_baseline":
 ```{r}
 baseline_amyloid_both_df = 
   inner_join(mci_amyloid_df, mci_baseline, by = "id")
 ```
-* there are `r nrow(baseline_amyloid_both_df)` participants appear in both datasets "mci_amyloid_df" and "mci_baseline". the combined data set has `r nrow(baseline_amyloid_both_df)` rows and `r ncol(baseline_amyloid_both_df)` cols. the names of variables are `r colnames(baseline_amyloid_both_df)`.
+* there are **`r nrow(baseline_amyloid_both_df)` participants** appear in both datasets "mci_amyloid_df" and "mci_baseline". the combined data set has **`r nrow(baseline_amyloid_both_df)` rows and `r ncol(baseline_amyloid_both_df)` cols**. the names of variables are **`r colnames(baseline_amyloid_both_df)`**.
 
 
 if i combine the data sets after pivot_longer "mci_amyloid_pivot_df" and "mci_baseline":
@@ -291,18 +315,18 @@ if i combine the data sets after pivot_longer "mci_amyloid_pivot_df" and "mci_ba
 baseline_amyloid_pivot_both_df = 
   inner_join(mci_amyloid_pivot_df, mci_baseline, by = "id")
 ```
-* there are `r nrow(baseline_amyloid_pivot_both_df)` participants appear in both datasets "mci_amyloid_pivot_df" and "mci_baseline". the combined data set has `r nrow(baseline_amyloid_pivot_both_df)` rows and `r ncol(baseline_amyloid_pivot_both_df)` cols. the names of variables are `r colnames(baseline_amyloid_pivot_both_df)`.
+* there are **`r nrow(baseline_amyloid_pivot_both_df)` observations** appear in both datasets "mci_amyloid_pivot_df" and "mci_baseline". the combined data set has **`r nrow(baseline_amyloid_pivot_both_df)` rows and `r ncol(baseline_amyloid_pivot_both_df)` cols**. the names of variables are **`r colnames(baseline_amyloid_pivot_both_df)`**. However, since one participant has 5 records (5 time points in total, which are visit = 0, 2, 4, 6, 8) in the tidied amyloid data set, when asking for how many participants appear in final combined dataset, we need to use `r nrow(baseline_amyloid_pivot_both_df)` divided by 5, which is **`r nrow(baseline_amyloid_pivot_both_df)/5` participants**.
 
 ## export final data set
 
 *export the result as a CSV to your data directory.*
-export the combining dataset for "mci_amyloid_pivot_df" and "mci_baseline"
+
+export the combining dataset for "mci_amyloid_pivot_df", which is a tidied dataset, and "mci_baseline"
 ```{r}
 write_csv(baseline_amyloid_pivot_both_df, "data/baseline_amyloid_pivot_both_df.csv")
 ```
 
-*export the combining dataset for "mci_amyloid_df" and "mci_baseline"*
+export the combining dataset for "mci_amyloid_df", which is an untidied dataset, and "mci_baseline"
 ```{r}
 write_csv(baseline_amyloid_both_df, "data/baseline_amyloid_both_df.csv")
 ```
-
